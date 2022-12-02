@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
+import "./WalletCard.css";
 
 const WalletCard = () => {
 	const [errorMessage, setErrorMessage] = useState(null);
@@ -8,24 +9,36 @@ const WalletCard = () => {
 	const [connButtonText, setConnButtonText] = useState("Connect Wallet");
 
 	const connectWalletHandler = () => {
-		if (window.ethereum) {
-			window.ethereum.request({ method: "eth_requestAccounts" }).then((result) => {
-				accountChangedHandler(result[0]);
-			});
+		if (window.ethereum && window.ethereum.isMetaMask) {
+			window.ethereum
+				.request({ method: "eth_requestAccounts" })
+				.then((result) => {
+					accountChangedHandler(result[0]);
+					setConnButtonText("Wallet Connected");
+					getAccountBalance(result[0]);
+				})
+				.catch((err) => {
+					setErrorMessage(err.message);
+				});
 		} else {
-			setErrorMessage("Install MetaMask");
+			setErrorMessage("Please install MetaMask browser extension to interact");
 		}
 	};
 
 	const accountChangedHandler = (newAccount) => {
 		setDefaultAccount(newAccount);
-		getUserBalance(newAccount.toString());
+		getAccountBalance(newAccount.toString());
 	};
 
-	const getUserBalance = (address) => {
-		window.ethereum.request({ method: "eth_getBalance", params: [address, "latest"] }).then((balance) => {
-			setUserBalance(ethers.utils.formatEther(balance));
-		});
+	const getAccountBalance = (address) => {
+		window.ethereum
+			.request({ method: "eth_getBalance", params: [address, "latest"] })
+			.then((balance) => {
+				setUserBalance(ethers.utils.formatEther(balance));
+			})
+			.catch((err) => {
+				setErrorMessage(err.message);
+			});
 	};
 
 	const chainChangedHandler = () => {
