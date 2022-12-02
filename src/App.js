@@ -1,4 +1,5 @@
 import "./App.css";
+import SmartContract from "./SmartContract";
 import WalletCardEthers from "./WallerCardEther";
 import WalletCard from "./WalletCard";
 
@@ -7,6 +8,7 @@ function App() {
 		<div className="App">
 			<WalletCard />
 			<WalletCardEthers />
+			<SmartContract />
 		</div>
 	);
 }
